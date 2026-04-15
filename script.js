@@ -1,3 +1,5 @@
+console.log("JS is working");
+
 function showMessage() {
-  alert("Welcome to K-Link Media and Technology!");
+  alert("K-Link Media & Technology is active!");
 }
