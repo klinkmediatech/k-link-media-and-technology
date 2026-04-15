@@ -1,21 +1,46 @@
 body {
   font-family: Arial;
-  text-align: center;
-  background: #f4f4f4;
+  background: #f5f7fa;
   margin: 0;
-  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-header {
+h1 {
   background: #0077cc;
   color: white;
   padding: 20px;
+  width: 100%;
+  margin: 0;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+p {
+  font-size: 16px;
+  color: #333;
 }
 
 button {
-  padding: 10px 20px;
-  margin-top: 20px;
-  background: green;
+  padding: 12px 25px;
+  background: #28a745;
   color: white;
   border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #1e7e34;
+}
+
+#msg {
+  margin-top: 15px;
+  font-weight: bold;
 }
