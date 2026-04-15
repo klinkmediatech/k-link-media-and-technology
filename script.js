@@ -56,5 +56,15 @@ function deleteService(index) {
   renderServices();
 }
 
+function showAdmin() {
+  let pass = prompt("Enter admin password:");
+
+  if (pass === "1234") {
+    document.getElementById("adminPanel").style.display = "block";
+  } else {
+    alert("Wrong password");
+  }
+}
+
 // first load
 renderServices();
