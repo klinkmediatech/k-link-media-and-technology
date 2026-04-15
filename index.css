@@ -1,31 +1,46 @@
 body {
   font-family: Arial;
+  margin: 0;
   background: #f5f7fa;
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
+
+  padding-top: 80px;
 }
 
-h1 {
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: #0077cc;
+  padding: 15px 20px;
   color: white;
-  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  z-index: 1000;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
   margin: 0;
+  padding: 0;
 }
 
-h2 {
-  margin-top: 20px;
+.navbar a {
+  color: white;
+  text-decoration: none;
 }
 
-p {
-  font-size: 16px;
-  color: #333;
+/* SECTIONS */
+section {
+  padding: 40px 20px;
 }
 
+/* BUTTON */
 button {
   padding: 12px 25px;
   background: #28a745;
@@ -40,6 +55,7 @@ button:hover {
   background: #1e7e34;
 }
 
+/* MESSAGE */
 #msg {
   margin-top: 15px;
   font-weight: bold;
