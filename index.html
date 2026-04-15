@@ -28,11 +28,14 @@
   <section id="services">
   <h2>Our Services</h2>
 
-  <!-- Admin input -->
+  <div id="adminPanel" style="display:none;">
   <input id="serviceInput" placeholder="Add new service">
   <button onclick="addService()">Add Service</button>
+</div>
 
-  <!-- Services will appear here -->
+<button onclick="showAdmin()">Admin Login</button>
+
+    <!-- Services will appear here -->
   <div id="serviceList" class="cards"></div>
 </section>
   <button onclick="showMessage()">Click Me</button>
