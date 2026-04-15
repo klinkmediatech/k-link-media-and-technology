@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  :focus-visible {
+    outline: 2px solid theme('colors.cyan.500');
+    outline-offset: 2px;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: theme('colors.cyan.500');
+    ring-offset: 2px;
+  }
+}

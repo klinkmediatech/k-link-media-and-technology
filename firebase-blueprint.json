@@ -1,0 +1,215 @@
+{
+  "entities": {
+    "Service": {
+      "title": "Service",
+      "description": "A service offered by K-Link",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Name of the service" },
+        "description": { "type": "string", "description": "Description of the service" },
+        "minPrice": { "type": "string", "description": "Starting price for the service" },
+        "available": { "type": "boolean", "description": "Whether the service is currently offered" },
+        "iconName": { "type": "string", "description": "Lucide icon name" },
+        "color": { "type": "string", "description": "Tailwind color class" },
+        "bg": { "type": "string", "description": "Tailwind background class" }
+      },
+      "required": ["title", "description", "minPrice", "available"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "A training enrollment request",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string" },
+        "dob": { "type": "string", "format": "date" },
+        "age": { "type": "number" },
+        "phone": { "type": "string" },
+        "village": { "type": "string" },
+        "parish": { "type": "string" },
+        "subCounty": { "type": "string" },
+        "district": { "type": "string" },
+        "nin": { "type": "string" },
+        "parentName": { "type": "string" },
+        "parentPhone": { "type": "string" },
+        "course": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["studentName", "dob", "age", "phone", "village", "parish", "subCounty", "district", "parentName", "parentPhone", "course", "status", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile and roles",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "manager", "instructor", "student", "learner"] },
+        "displayName": { "type": "string" },
+        "phone": { "type": "string" },
+        "pin": { "type": "string" },
+        "pinSet": { "type": "boolean" }
+      },
+      "required": ["email", "role"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "A notification message for a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["enrollment_confirmed", "general", "payment_confirmed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["userId", "title", "message", "type", "createdAt", "read"]
+    },
+    "PaymentRequest": {
+      "title": "PaymentRequest",
+      "description": "A request for payment for a study package",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "packageId": { "type": "string" },
+        "packageName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "adminResponse": { "type": "string" }
+      },
+      "required": ["userId", "studentName", "packageId", "packageName", "amount", "status", "createdAt"]
+    },
+    "StudyAccess": {
+      "title": "StudyAccess",
+      "description": "Records which packages a student has access to",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "packageId": { "type": "string" },
+        "grantedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "packageId", "grantedAt"]
+    },
+    "DirectorProfile": {
+      "title": "DirectorProfile",
+      "description": "Director's profile details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["name", "title", "message", "imageUrl"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Advert banner configuration",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["text", "active"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "A message from the contact form",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["new", "read", "replied"] }
+      },
+      "required": ["name", "contact", "subject", "message", "timestamp", "status"]
+    },
+    "LogoConfig": {
+      "title": "LogoConfig",
+      "description": "Website logo configuration",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" }
+      },
+      "required": ["url"]
+    },
+    "HeroConfig": {
+      "title": "HeroConfig",
+      "description": "Website hero image configuration",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" }
+      },
+      "required": ["url"]
+    },
+    "AdvertItem": {
+      "title": "AdvertItem",
+      "description": "An advertisement displayed on the website",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "link": { "type": "string" },
+        "active": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "imageUrl", "active", "order"]
+    }
+  },
+  "firestore": {
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Collection of K-Link services"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "Collection of training enrollments"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User roles and profiles"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User notifications"
+    },
+    "/payment_requests/{requestId}": {
+      "schema": "PaymentRequest",
+      "description": "Payment requests from students"
+    },
+    "/study_access/{accessId}": {
+      "schema": "StudyAccess",
+      "description": "Granted access to study materials"
+    },
+    "/siteConfig/director": {
+      "schema": "DirectorProfile",
+      "description": "Director's profile configuration"
+    },
+    "/siteConfig/banner": {
+      "schema": "Banner",
+      "description": "Advert banner configuration"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Contact form submissions"
+    },
+    "/siteConfig/logo": {
+      "schema": "LogoConfig",
+      "description": "Website logo configuration"
+    },
+    "/siteConfig/hero": {
+      "schema": "HeroConfig",
+      "description": "Website hero image configuration"
+    },
+    "/adverts/{advertId}": {
+      "schema": "AdvertItem",
+      "description": "Collection of advertisements"
+    }
+  }
+}

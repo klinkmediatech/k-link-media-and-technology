@@ -1,0 +1,257 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: services
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - description: string (required)
+    //   - minPrice: string (required)
+    //   - available: bool (required)
+    //   - iconName: string (optional)
+    //   - color: string (optional)
+    //   - bg: string (optional)
+    //
+    // Collection: enrollments
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - phone: string (required)
+    //   - course: string (required)
+    //   - status: string (required, enum: ['pending', 'confirmed', 'completed'])
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: users
+    // Document ID: userId
+    // Fields:
+    //   - email: string (required)
+    //   - role: string (required, enum: ['admin', 'manager', 'instructor', 'student', 'learner'])
+    //   - displayName: string (optional)
+    //   - pin: string (optional, 4 digits)
+    //   - pinSet: bool (optional)
+    //
+    // Collection: notifications
+    // Document ID: auto-generated
+    // Fields:
+    //   - userId: string (required)
+    //   - title: string (required)
+    //   - message: string (required)
+    //   - type: string (required, enum: ['enrollment_confirmed', 'general', 'payment_confirmed'])
+    //   - createdAt: timestamp (required)
+    //   - read: bool (required)
+    //
+    // Collection: payment_requests
+    // Document ID: auto-generated
+    // Fields:
+    //   - userId: string (required)
+    //   - studentName: string (required)
+    //   - packageId: string (required)
+    //   - packageName: string (required)
+    //   - amount: number (required)
+    //   - status: string (required, enum: ['pending', 'confirmed', 'rejected'])
+    //   - createdAt: timestamp (required)
+    //   - adminResponse: string (optional)
+    //
+    // Collection: study_access
+    // Document ID: auto-generated
+    // Fields:
+    //   - userId: string (required)
+    //   - packageId: string (required)
+    //   - grantedAt: timestamp (required)
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'manager', 'instructor']) ||
+          (request.auth.token.email == "okellok2000@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "okellok2000@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidService(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.description is string && data.description.size() > 0 && data.description.size() < 500 &&
+             data.minPrice is string && data.minPrice.size() > 0 && data.minPrice.size() < 50 &&
+             data.available is bool;
+    }
+
+    function isValidEnrollment(data) {
+      return data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.dob is string && data.dob.size() > 0 &&
+             data.age is number && data.age >= 0 &&
+             data.phone is string && data.phone.size() > 0 && data.phone.size() < 20 &&
+             data.village is string && data.village.size() > 0 &&
+             data.parish is string && data.parish.size() > 0 &&
+             data.subCounty is string && data.subCounty.size() > 0 &&
+             data.district is string && data.district.size() > 0 &&
+             data.parentName is string && data.parentName.size() > 0 &&
+             data.parentPhone is string && data.parentPhone.size() > 0 &&
+             data.course is string && data.course.size() > 0 && data.course.size() < 100 &&
+             data.status in ['pending', 'confirmed', 'completed'] &&
+             data.createdAt is timestamp &&
+             data.userId is string &&
+             (!('nin' in data) || (data.nin is string));
+    }
+
+    function isValidUser(data) {
+      return data.email is string && data.email.size() > 0 &&
+             data.role in ['admin', 'manager', 'instructor', 'student', 'learner'] &&
+             (!('pin' in data) || (data.pin is string && data.pin.matches('^[0-9]{4}$'))) &&
+             (!('pinSet' in data) || data.pinSet is bool) &&
+             (!('displayName' in data) || (data.displayName is string || data.displayName == null));
+    }
+
+    function isValidNotification(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.message is string && data.message.size() > 0 && data.message.size() < 1000 &&
+             data.type in ['enrollment_confirmed', 'general', 'payment_confirmed'] &&
+             data.createdAt is timestamp &&
+             data.read is bool;
+    }
+
+    function isValidPaymentRequest(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.studentName is string && data.studentName.size() > 0 &&
+             data.packageId is string && data.packageId.size() > 0 &&
+             data.packageName is string && data.packageName.size() > 0 &&
+             data.amount is number && data.amount >= 0 &&
+             data.status in ['pending', 'confirmed', 'rejected'] &&
+             data.createdAt is timestamp &&
+             (!('adminResponse' in data) || (data.adminResponse is string));
+    }
+
+    function isValidInquiry(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.contact is string && data.contact.size() > 0 && data.contact.size() < 100 &&
+             data.subject is string && data.subject.size() > 0 && data.subject.size() < 200 &&
+             data.message is string && data.message.size() >= 10 && data.message.size() < 2000 &&
+             data.status in ['new', 'read', 'replied'] &&
+             data.timestamp is timestamp;
+    }
+
+    function isValidBanner(data) {
+      return data.text is string && data.text.size() > 0 && data.text.size() < 500 &&
+             data.active is bool;
+    }
+
+    function isValidAdvert(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             (!('description' in data) || (data.description is string && data.description.size() < 500)) &&
+             data.imageUrl is string && data.imageUrl.size() > 0 &&
+             (!('link' in data) || (data.link is string)) &&
+             data.active is bool &&
+             data.order is number;
+    }
+
+    function isValidStudyAccess(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.packageId is string && data.packageId.size() > 0 &&
+             data.grantedAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /services/{serviceId} {
+      allow read: if true; // Publicly readable
+      allow write: if isAdmin() && isValidService(request.resource.data);
+    }
+
+    match /enrollments/{enrollmentId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isValidEnrollment(request.resource.data) && 
+                    (request.resource.data.userId == 'anonymous' || (isAuthenticated() && request.resource.data.userId == request.auth.uid));
+      allow update: if isAdmin() && isValidEnrollment(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && 
+                    (request.resource.data.role in ['learner', 'student'] || isSuperAdmin());
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && 
+                       (request.resource.data.role == resource.data.role || isSuperAdmin())) || isSuperAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAdmin() && isValidNotification(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && 
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /payment_requests/{requestId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidPaymentRequest(request.resource.data);
+      allow update: if isAdmin() && isValidPaymentRequest(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /study_access/{accessId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAdmin() && isValidStudyAccess(request.resource.data);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /siteConfig/director {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /siteConfig/logo {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    match /siteConfig/hero {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    match /siteConfig/banner {
+      allow read: if true;
+      allow write: if isAdmin() && isValidBanner(request.resource.data);
+    }
+
+    match /adverts/{advertId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidAdvert(request.resource.data);
+    }
+
+    match /inquiries/{inquiryId} {
+      allow read: if isAdmin();
+      allow create: if isValidInquiry(request.resource.data);
+      allow update: if isAdmin() && isValidInquiry(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}
