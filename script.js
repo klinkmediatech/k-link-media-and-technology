@@ -28,7 +28,7 @@ function renderServices() {
   let container = document.getElementById("serviceList");
   container.innerHTML = "";
 
-  services.forEach((item) => {
+  services.forEach((item.name) => {
     let div = document.createElement("div");
     div.className = "card";
 
