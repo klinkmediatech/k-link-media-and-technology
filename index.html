@@ -28,11 +28,12 @@
   <section id="services">
   <h2>Our Services</h2>
 
-  <div class="cards">
-    <div class="card">Web Design</div>
-    <div class="card">IT Support</div>
-    <div class="card">Media Production</div>
-  </div>
+  <!-- Admin input -->
+  <input id="serviceInput" placeholder="Add new service">
+  <button onclick="addService()">Add Service</button>
+
+  <!-- Services will appear here -->
+  <div id="serviceList" class="cards"></div>
 </section>
   <button onclick="showMessage()">Click Me</button>
 
