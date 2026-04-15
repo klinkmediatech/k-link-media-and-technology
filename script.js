@@ -1,5 +1,4 @@
-console.log("JS is working");
-
 function showMessage() {
-  alert("NEW TEST MESSAGE!");
+  document.getElementById("msg").innerText =
+    "K-Link Media & Technology is active!";
 }
