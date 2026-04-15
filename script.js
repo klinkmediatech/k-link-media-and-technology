@@ -22,24 +22,24 @@ let services = JSON.parse(localStorage.getItem("services")) || [
   "Media Production"
 ];
 
+let isAdmin = false;
+
 function renderServices() {
   let container = document.getElementById("serviceList");
   container.innerHTML = "";
 
-  services.forEach((service, index) => {
+  services.forEach((item) => {
     let div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      ${service}
+      ${item.name}
       <br><br>
-      <button onclick="deleteService(${index})">Delete</button>
+      ${isAdmin ? `<button onclick="deleteService('${item.id}')">Delete</button>` : ""}
     `;
 
     container.appendChild(div);
   });
-
-  localStorage.setItem("services", JSON.stringify(services));
 }
 
 function addService() {
@@ -60,7 +60,9 @@ function showAdmin() {
   let pass = prompt("Enter admin password:");
 
   if (pass === "1234") {
+    isAdmin = true;
     document.getElementById("adminPanel").style.display = "block";
+    renderServices(); // refresh to show delete buttons
   } else {
     alert("Wrong password");
   }
